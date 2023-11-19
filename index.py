@@ -10,8 +10,12 @@ class Game(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.peoples = self.listPeople("pics")
-        self.create_widgets()
+        root.title("Who are you")
+
+        self.picsPath = "pics"
+        self.peoples = self.listPeople(self.picsPath)
+        self.createWidgets()
+        self.changePerson()
 
     @staticmethod
     def listPeople(path: str):
@@ -20,57 +24,48 @@ class Game(tk.Frame):
         peoples.remove(".gitkeep")
         return peoples
 
-    def create_widgets(self):
+    def createButtons(self, row: int, column: int):
+        self.textVariables = []
+        buttons = []
+        for y in range(row):
+            for x in range(column):
+                self.textVariables.append(tk.StringVar())
+                button = ttk.Button(root, width=30)
+                button["textvariable"] = self.textVariables[y * column + x]
+                button.grid(row=y + 1, column=x, padx=10, pady=10)
+                # Is there a better way to do this?
+                button["command"] = lambda y=y, x=x: self.onClick(y * column + x)
+                buttons.append(button)
 
-        root.title("Who are you")
-
-        self.correct_person = 0
-
+    def createWidgets(self):
         # create a label at center of window with image
-        self.myimage = ttk.Label(root)
-        self.myimage.grid(row=0, column=0, columnspan=3)
+        self.imageLabel = ttk.Label(root)
+        self.imageLabel.grid(row=0, column=0, columnspan=3)
+        self.currentImage = None
 
-        # Create 3 text variable to store the name
-        self.name1 = tk.StringVar()
-        self.name2 = tk.StringVar()
-        self.name3 = tk.StringVar()
+        self.createButtons(1,3)
 
-        # Create button
-        button1 = ttk.Button(root, width=30)
-        button2 = ttk.Button(root, width=30)
-        button3 = ttk.Button(root, width=30)
+    def changePerson(self):
+        names = random.choices(self.peoples, k=len(self.textVariables))
+        self.correct_person = random.randint(0, len(self.textVariables) - 1)
 
-        self.on_click(0)
+        # Texts
+        for i, textVar in enumerate(self.textVariables):
+            textVar.set(names[i])
 
-        # Create 3 button to guess the correct name
+        # Image
+        if (self.currentImage is not None):
+            self.currentImage.close()
+        self.currentImage = Image.open(os.path.join(self.picsPath, names[self.correct_person]))
+        self.imgobj = ImageTk.PhotoImage(self.currentImage)
+        self.imageLabel["image"] = self.imgobj
 
-        button1["textvariable"] = self.name1
-        button1["command"] = lambda: self.on_click(0)
-        button1.grid(row=1, column=0, padx=10, pady=10)
-
-        button2["textvariable"] = self.name2
-        button2["command"] = lambda: self.on_click(1)
-        button2.grid(row=1, column=1, padx=10, pady=10)
-
-        button3["textvariable"] = self.name3
-        button3["command"] = lambda: self.on_click(2)
-        button3.grid(row=1, column=2, padx=10, pady=10)
-
-    def on_click(self, choice: str):
+    def onClick(self, choice: int):
         if (choice == self.correct_person):
             print("Correct")
+            self.changePerson()
         else:
             print("Wrong")
-            return
-        self.correct_person = random.randint(0, 2)
-        names = [random.choice(self.peoples),random.choice(self.peoples),random.choice(self.peoples)]
-        self.name1.set(names[0])
-        self.name2.set(names[1])
-        self.name3.set(names[2])
-        global imgobj
-        imgobj = ImageTk.PhotoImage(Image.open("pics/" + names[self.correct_person]))
-        self.myimage["image"] = imgobj
-
 
 root = tk.Tk()
 myapp = Game(root)
