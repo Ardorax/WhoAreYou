@@ -17,6 +17,8 @@ class Game(tk.Frame):
         self.createWidgets()
         self.changePerson()
 
+        root.bind("<Key>", self.on_keyboard_event)
+
     @staticmethod
     def listPeople(path: str):
         # List all student
@@ -43,7 +45,7 @@ class Game(tk.Frame):
         self.imageLabel.grid(row=0, column=0, columnspan=3)
         self.currentImage = None
 
-        self.createButtons(1,3)
+        self.createButtons(3,3)
 
     def changePerson(self):
         names = random.choices(self.peoples, k=len(self.textVariables))
@@ -51,7 +53,7 @@ class Game(tk.Frame):
 
         # Texts
         for i, textVar in enumerate(self.textVariables):
-            textVar.set(names[i])
+            textVar.set(".".join(names[i].split(".")[:-1]))
 
         # Image
         if (self.currentImage is not None):
@@ -59,6 +61,18 @@ class Game(tk.Frame):
         self.currentImage = Image.open(os.path.join(self.picsPath, names[self.correct_person]))
         self.imgobj = ImageTk.PhotoImage(self.currentImage)
         self.imageLabel["image"] = self.imgobj
+
+    def on_keyboard_event(self, event):
+        if not event.char.isnumeric() or event.char == "0":
+            return
+        choice = int(event.char)
+        # Transform key pressed to correct index
+        if choice < 4:
+            choice += 6
+        elif choice > 6:
+            choice -=6
+        # send index starting from 0 not 1
+        self.onClick(choice - 1)
 
     def onClick(self, choice: int):
         if (choice == self.correct_person):
