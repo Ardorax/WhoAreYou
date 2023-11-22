@@ -28,7 +28,7 @@ class Game(tk.Frame):
 
     def createButtons(self, row: int, column: int):
         self.textVariables = []
-        buttons = []
+        self.buttons = []
         for y in range(row):
             for x in range(column):
                 self.textVariables.append(tk.StringVar())
@@ -37,7 +37,7 @@ class Game(tk.Frame):
                 button.grid(row=y + 1, column=x, padx=10, pady=10)
                 # Is there a better way to do this?
                 button["command"] = lambda y=y, x=x: self.onClick(y * column + x)
-                buttons.append(button)
+                self.buttons.append(button)
 
     def createWidgets(self):
         # create a label at center of window with image
@@ -51,9 +51,10 @@ class Game(tk.Frame):
         names = random.choices(self.peoples, k=len(self.textVariables))
         self.correct_person = random.randint(0, len(self.textVariables) - 1)
 
-        # Texts
+        # Texts and enable buttons
         for i, textVar in enumerate(self.textVariables):
             textVar.set(".".join(names[i].split(".")[:-1]))
+            self.buttons[i]["state"] = tk.NORMAL
 
         # Image
         if (self.currentImage is not None):
@@ -71,14 +72,17 @@ class Game(tk.Frame):
             choice += 6
         elif choice > 6:
             choice -=6
-        # send index starting from 0 not 1
-        self.onClick(choice - 1)
+        # Index between 0-8
+        choice -= 1
+        self.buttons[choice % len(self.buttons)].invoke()
 
     def onClick(self, choice: int):
         if (choice == self.correct_person):
             print("Correct")
             self.changePerson()
+            return
         else:
+            self.buttons[choice]["state"] = tk.DISABLED
             print("Wrong")
 
 root = tk.Tk()
