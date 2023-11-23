@@ -22,8 +22,11 @@ class Game(tk.Frame):
     @staticmethod
     def listPeople(path: str):
         # List all student
-        peoples = os.listdir("pics")
-        peoples.remove(".gitkeep")
+        peoples = os.listdir(path)
+        try:
+            peoples.remove(".gitkeep")
+        except:
+            pass
         return peoples
 
     def createButtons(self, row: int, column: int):
@@ -48,7 +51,7 @@ class Game(tk.Frame):
         self.createButtons(3,3)
 
     def changePerson(self):
-        names = random.choices(self.peoples, k=len(self.textVariables))
+        names = random.sample(self.peoples, len(self.textVariables))
         self.correct_person = random.randint(0, len(self.textVariables) - 1)
 
         # Texts and enable buttons
