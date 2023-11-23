@@ -7,10 +7,11 @@ import random
 import os
 from enum import Enum
 
+
 class Modes(Enum):
-    Entry=0
-    Choice3=1
-    Choice9=2
+    Entry = 0
+    Choice3 = 1
+    Choice9 = 2
 
 
 class Game(tk.Frame):
@@ -53,14 +54,19 @@ class Game(tk.Frame):
     def createEntry(self):
         self.entry = dict()
         self.entry_var = tk.StringVar()
-        self.entry_var.trace_add("write", lambda name, index, mode, sv=self.entry_var: self.entry_autocompletion(sv))
+        self.entry_var.trace_add(
+            "write",
+            lambda name, index, mode, sv=self.entry_var: self.entry_autocompletion(sv),
+        )
         self.entry_tk = tk.Entry(self.master, width=30, textvariable=self.entry_var)
         self.entry_tk.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
         self.entry_tk.bind("<Return>", self.verifyEntry)
 
         # Skip button
         self.infoLabelVar = tk.StringVar()
-        infoLabel = ttk.Label(self.master, textvariable=self.infoLabelVar, justify=tk.CENTER, width=30)
+        infoLabel = ttk.Label(
+            self.master, textvariable=self.infoLabelVar, justify=tk.CENTER, width=30
+        )
         infoLabel.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
         button = ttk.Button(self.master, width=30, text="Skip")
         button.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
@@ -68,7 +74,7 @@ class Game(tk.Frame):
         button.bind("<Return>", self.skip)
 
     def verifyEntry(self, event=None):
-        if (self.entry_var.get() == self.getPersonName(self.correct_person)):
+        if self.entry_var.get() == self.getPersonName(self.correct_person):
             self.infoLabelVar.set(f"{self.entry_var.get()}\nCorrect!")
             self.correct_person = random.choice(self.peoples)
             self.changePerson()
@@ -87,7 +93,7 @@ class Game(tk.Frame):
                 props.append(name)
 
         # Auto complete if only one valid name
-        if (len(props) == 1):
+        if len(props) == 1:
             self.entry_var.set(self.getPersonName(props[0]))
             self.verifyEntry()
 
@@ -102,11 +108,11 @@ class Game(tk.Frame):
                 self.createEntry()
                 self.changePerson()
             case Modes.Choice3:
-                self.createButtons(1,3)
+                self.createButtons(1, 3)
                 self.changePerson()
                 self.master.bind("<Key>", self.on_keyboard_event)
             case Modes.Choice9:
-                self.createButtons(3,3)
+                self.createButtons(3, 3)
                 self.changePerson()
                 self.master.bind("<Key>", self.on_keyboard_event)
 
@@ -129,7 +135,7 @@ class Game(tk.Frame):
         self.refreshImage()
 
     def refreshImage(self):
-        if (self.currentImage is not None):
+        if self.currentImage is not None:
             self.currentImage.close()
         self.currentImage = Image.open(os.path.join(self.picsPath, self.correct_person))
         self.imgobj = ImageTk.PhotoImage(self.currentImage)
@@ -143,7 +149,7 @@ class Game(tk.Frame):
         if choice < 4:
             choice += 6
         elif choice > 6:
-            choice -=6
+            choice -= 6
         # Index between 0-8
         choice -= 1
         self.buttons[choice % len(self.buttons)].invoke()
@@ -156,6 +162,7 @@ class Game(tk.Frame):
         else:
             self.buttons[choice]["state"] = tk.DISABLED
             print("Wrong")
+
 
 tkApp = tk.Tk()
 mode = Modes.Entry
