@@ -20,7 +20,8 @@ class GameEntry(GameBase):
         self.entry_tk.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
         self.entry_tk.bind("<Return>", self.verifyEntry)
 
-        self.lastLabel = ttk.Label(self.master, text="")
+        self.lastLabelVar = tk.StringVar()
+        self.lastLabel = ttk.Label(self.master, textvariable=self.lastLabelVar)
         self.lastLabel.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
 
         skip_button = ttk.Button(self.master, width=30, text="Skip", command=self.skip)
@@ -41,14 +42,9 @@ class GameEntry(GameBase):
             self.verifyEntry()
 
     def setLabel(self, text, color):
-        labelText = tk.StringVar()
-        labelText.set(text)
-        if self.lastLabel is not None:
-            self.lastLabel.destroy()
-        label = ttk.Label(self.master, textvariable=labelText, foreground=color)
-        label.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
-        self.master.after(2000, lambda: labelText.set(""))
-        self.lastLabel = label
+        self.lastLabelVar.set(text)
+        self.lastLabel["foreground"] = color
+        self.master.after(2000, lambda: self.lastLabelVar.set(""))
 
     def correct(self, guess):
         self.setLabel(f"{self.getPersonName(guess)} is correct!", "green")
