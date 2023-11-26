@@ -12,11 +12,14 @@ class GameEntry(GameBase):
         super().createWidgets()
 
         self.entry_var = tk.StringVar()
-        self.entry_var.trace_add("write", lambda name, index, mode, sv=self.entry_var: self.entry_autocompletion(sv))
+        self.entry_var.trace_add(
+            "write",
+            lambda name, index, mode, sv=self.entry_var: self.entry_autocompletion(sv),
+        )
         self.entry_tk = tk.Entry(self.master, width=30, textvariable=self.entry_var)
         self.entry_tk.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
         self.entry_tk.bind("<Return>", self.verifyEntry)
-    
+
         self.lastLabel = ttk.Label(self.master, text="")
         self.lastLabel.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
 
@@ -28,11 +31,15 @@ class GameEntry(GameBase):
         if len(currentText) < 3:
             return
         currentText = self.getPersonName(currentText)
-        props = [name for name in self.peoples if self.getPersonName(name).startswith(currentText)]
+        props = [
+            name
+            for name in self.peoples
+            if self.getPersonName(name).startswith(currentText)
+        ]
         if len(props) == 1:
             self.entry_var.set(self.getPersonName(props[0]))
             self.verifyEntry()
-    
+
     def setLabel(self, text, color):
         labelText = tk.StringVar()
         labelText.set(text)
@@ -47,7 +54,7 @@ class GameEntry(GameBase):
         self.setLabel(f"{self.getPersonName(guess)} is correct!", "green")
         self.entry_var.set("")
         self.changePerson()
-    
+
     def wrong(self, guess):
         self.setLabel(f"{self.getPersonName(guess)} is wrong!", "red")
         self.entry_var.set("")
@@ -56,7 +63,7 @@ class GameEntry(GameBase):
         self.guess(
             guess=self.entry_var.get(),
             onCorrect=lambda: self.correct(self.entry_var.get()),
-            onWrong=lambda: self.wrong(self.entry_var.get())
+            onWrong=lambda: self.wrong(self.entry_var.get()),
         )
 
     def skip(self):

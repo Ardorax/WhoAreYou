@@ -27,16 +27,21 @@ class GameChoice(GameBase):
         for y in range(row):
             for x in range(column):
                 button = ttk.Button(
-                    self.master, width=30, command=lambda y=y, x=x: self.onClick(y * column + x))
+                    self.master,
+                    width=30,
+                    command=lambda y=y, x=x: self.onClick(y * column + x),
+                )
                 button.grid(row=y + 1, column=x, padx=10, pady=10)
                 self.buttons.append(button)
         self.changePerson()
 
     def changePerson(self):
         super().changePerson()
-        self.namesProposals = random.sample(list(filter(lambda x: x != self.correct_person, self.peoples)),
-                                            self.num_choices - 1) + [self.correct_person]
-            
+        self.namesProposals = random.sample(
+            list(filter(lambda x: x != self.correct_person, self.peoples)),
+            self.num_choices - 1,
+        ) + [self.correct_person]
+
         random.shuffle(self.namesProposals)
         for i, button in enumerate(self.buttons):
             button["text"] = self.getPersonName(self.namesProposals[i])
@@ -49,5 +54,5 @@ class GameChoice(GameBase):
         self.guess(
             guess=self.getPersonName(self.namesProposals[choice]),
             onCorrect=lambda: self.changePerson(),
-            onWrong=lambda: self.onWrong(choice)
+            onWrong=lambda: self.onWrong(choice),
         )

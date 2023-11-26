@@ -6,6 +6,7 @@ import random
 import os
 import json
 
+
 class GameBase(tk.Frame):
     def __init__(self, master, picsPath):
         super().__init__(master)
@@ -27,9 +28,9 @@ class GameBase(tk.Frame):
     @staticmethod
     def getPersonName(path: str):
         path = path.replace(".jpg", "")
-        path = ''.join([i if i.isalpha() else ' ' for i in path])
+        path = "".join([i if i.isalpha() else " " for i in path])
         path = path.strip()
-        path = ' '.join([i.capitalize() for i in path.split()])
+        path = " ".join([i.capitalize() for i in path.split()])
         return path
 
     def createWidgets(self):
@@ -64,7 +65,14 @@ class GameBase(tk.Frame):
         random.shuffle(peoples)
         data = self.getStatuses()
 
-        order = list(sorted(peoples, key=lambda x: 0 if x not in data else data[x]["correct"] / (data[x]["wrong"] + data[x]["correct"])))
+        order = list(
+            sorted(
+                peoples,
+                key=lambda x: 0
+                if x not in data
+                else data[x]["correct"] / (data[x]["wrong"] + data[x]["correct"]),
+            )
+        )
 
         for i in range(len(order)):
             score = random.randint(0, 10)
@@ -73,7 +81,7 @@ class GameBase(tk.Frame):
                 break
 
         self.refreshImage()
-    
+
     def getStatuses(self):
         if os.path.exists("data.json"):
             with open("data.json", "r") as f:

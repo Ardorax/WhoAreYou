@@ -41,4 +41,3 @@ else:
     raise ValueError("Invalid mode selected")
 
 myapp.mainloop()
-
